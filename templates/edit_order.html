@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edytuj Zamówienie</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Edytuj Zamówienie</h2>
+        <form action="/edit/{{ order.SalesOrderID }}" method="post">
+            <div class="form-group">
+                <label for="orderDate">Data Zamówienia</label>
+                <input type="date" class="form-control" id="orderDate" name="order_date" value="{{ order.OrderDate | date: '%Y-%m-%d' }}" required>
+            </div>
+            <!-- Dodaj inne pola formularza -->
+            <button type="submit" class="btn btn-primary">Zaktualizuj</button>
+        </form>
+    </div>
+</body>
+</html>

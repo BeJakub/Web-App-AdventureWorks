@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zamówienia</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Lista Zamówień</h2>
+        <a href="/add" class="btn btn-primary mb-3">Dodaj Zamówienie</a>
+
+        <!-- Formularz wyboru liczby rekordów -->
+        <form action="/" method="get" class="mb-3">
+            <div class="form-group">
+                <label for="limit">Pokaż rekordy:</label>
+                <select name="limit" id="limit" class="form-control" onchange="this.form.submit()">
+                    <option value="10" {% if limit == 10 %} selected {% endif %}>10</option>
+                    <option value="20" {% if limit == 20 %} selected {% endif %}>20</option>
+                    <option value="50" {% if limit == 50 %} selected {% endif %}>50</option>
+                    <option value="100" {% if limit == 100 %} selected {% endif %}>100</option>
+                </select>
+            </div>
+        </form>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data Zamówienia</th>
+                    <th>Data Dostawy</th>
+                    <th>Data Wysyłki</th>
+                    <!-- Dodaj inne nagłówki kolumn -->
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.SalesOrderID }}</td>
+                    <td>{{ order.OrderDate }}</td>
+                    <td>{{ order.DueDate }}</td>
+                    <td>{{ order.ShipDate }}</td>
+                    <!-- Dodaj inne pola -->
+                    <td>
+                        <a href="/edit/{{ order.SalesOrderID }}" class="btn btn-secondary btn-sm">Edytuj</a>
+                        <a href="/delete/{{ order.SalesOrderID }}" class="btn btn-danger btn-sm">Usuń</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

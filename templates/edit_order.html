@@ -12,7 +12,7 @@
         <form action="/edit/{{ order.SalesOrderID }}" method="post">
             <div class="form-group">
                 <label for="orderDate">Data Zamówienia</label>
-                <input type="date" class="form-control" id="orderDate" name="order_date" value="{{ order.OrderDate | date: '%Y-%m-%d' }}" required>
+                <input type="date" class="form-control" id="orderDate" name="order_date" value="{{ order.OrderDate|format_date }}" required>
             </div>
             <!-- Dodaj inne pola formularza -->
             <button type="submit" class="btn btn-primary">Zaktualizuj</button>

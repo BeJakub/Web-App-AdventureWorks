@@ -11,10 +11,44 @@
         <h2>Dodaj Zamówienie</h2>
         <form action="/add" method="post">
             <div class="form-group">
+                <label for="customerID">ID Klienta</label>
+                <input type="number" class="form-control" id="customerID" name="customer_id" required>
+            </div>
+            <div class="form-group">
+                <label for="billToAddressID">ID Adresu Rozliczeniowego</label>
+                <input type="number" class="form-control" id="billToAddressID" name="bill_to_address_id" required>
+            </div>
+            <div class="form-group">
+                <label for="shipToAddressID">ID Adresu Wysyłki</label>
+                <input type="number" class="form-control" id="shipToAddressID" name="ship_to_address_id" required>
+            </div>
+            <div class="form-group">
                 <label for="orderDate">Data Zamówienia</label>
                 <input type="date" class="form-control" id="orderDate" name="order_date" required>
             </div>
-            <!-- Dodaj inne pola formularza -->
+            
+            <div class="form-group">
+                <label for="dueDate">Data Realizacji</label>
+                <input type="date" class="form-control" id="dueDate" name="due_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="shipDate">Data Wysyłki</label>
+                <input type="date" class="form-control" id="shipDate" name="ship_date">
+            </div>
+            <div class="form-group">
+                <label for="shipMethodID">Metoda Wysyłki</label>
+                <select class="form-control" id="shipMethodID" name="ship_method_id" required>
+                    <option value="">Wybierz metodę...</option>
+                    <option value="1">XRQ - TRUCK GROUND</option>
+                    <option value="2">ZY - EXPRESS</option>
+                    <option value="3">OVERSEAS - DELUXE</option>
+                    <option value="4">OVERNIGHT J-FAST</option>
+                    <option value="5">CARGO TRANSPORT 5</option>
+                </select>
+            </div>
+            <!-- Dodaj tu inne wymagane pola... -->
+
             <button type="submit" class="btn btn-primary">Dodaj</button>
         </form>
     </div>

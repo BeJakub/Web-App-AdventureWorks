@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,27 +11,40 @@
         <h2>Dodaj Zamówienie</h2>
         <form action="/add" method="post">
             <div class="form-group">
-                <label for="customerID">ID Klienta</label>
-                <input type="number" class="form-control" id="customerID" name="customer_id" required>
+                <label for="existingAddressID">Wybierz istniejący adres:</label>
+                <select class="form-control" id="existingAddressID" name="existing_address_id">
+                    <option value="">Wybierz adres...</option>
+                    {% for address in addresses %}
+                    <option value="{{ address.AddressID }}">{{ address.AddressLine1 }} {{ address.City }} {{ address.PostalCode }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group">
-                <label for="billToAddressID">ID Adresu Rozliczeniowego</label>
-                <input type="number" class="form-control" id="billToAddressID" name="bill_to_address_id" required>
+                <label for="newAddressLine1">Lub dodaj nowy adres:</label>
+                <input type="text" class="form-control" id="newAddressLine1" name="new_address_line1" placeholder="Linia adresu 1">
             </div>
             <div class="form-group">
-                <label for="shipToAddressID">ID Adresu Wysyłki</label>
-                <input type="number" class="form-control" id="shipToAddressID" name="ship_to_address_id" required>
+                <label for="existingCustomerID">Istniejący Klient</label>
+                <select name="existing_customer_id" id="existingCustomerID">
+                    <option value="">Wybierz klienta...</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.CustomerID }}">{{customer.CustomerID}}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Pola dla dodania nowego klienta -->
+                <label for="newCustomerName">Imię Nowego Klienta</label>
+                <input type="text" id="newCustomerName" name="new_customer_name">
             </div>
+            <!-- Kontynuacja formularza dla zamówienia -->
             <div class="form-group">
                 <label for="orderDate">Data Zamówienia</label>
                 <input type="date" class="form-control" id="orderDate" name="order_date" required>
             </div>
-            
             <div class="form-group">
                 <label for="dueDate">Data Realizacji</label>
                 <input type="date" class="form-control" id="dueDate" name="due_date" required>
             </div>
-
             <div class="form-group">
                 <label for="shipDate">Data Wysyłki</label>
                 <input type="date" class="form-control" id="shipDate" name="ship_date">
@@ -40,17 +53,16 @@
                 <label for="shipMethodID">Metoda Wysyłki</label>
                 <select class="form-control" id="shipMethodID" name="ship_method_id" required>
                     <option value="">Wybierz metodę...</option>
-                    <option value="1">XRQ - TRUCK GROUND</option>
-                    <option value="2">ZY - EXPRESS</option>
-                    <option value="3">OVERSEAS - DELUXE</option>
-                    <option value="4">OVERNIGHT J-FAST</option>
-                    <option value="5">CARGO TRANSPORT 5</option>
+                    {% for method in ship_methods %}
+                    <option value="{{ method.ShipMethodID }}">{{ method.Name }}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <!-- Dodaj tu inne wymagane pola... -->
-
             <button type="submit" class="btn btn-primary">Dodaj</button>
         </form>
     </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

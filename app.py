@@ -47,6 +47,25 @@ class SalesOrderHeader(db.Model):
     rowguid = db.Column(db.String(36), default=lambda: str(uuid.uuid4()))
     ModifiedDate = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Customer(db.Model):
+    __tablename__ = 'Customer'
+    __table_args__ = {'schema': 'Sales'}
+    CustomerID = db.Column(db.Integer, primary_key=True)
+    
+class Person(db.Model):
+    __tablename__ = 'Person'
+    __table_args__ = {'schema': 'Person'}
+    BusinessEntityID = db.Column(db.Integer, primary_key=True)
+    # Include other fields as necessary
+
+class Address(db.Model):
+    __tablename__ = 'Address'
+    __table_args__ = {'schema': 'Person'}
+    AddressID = db.Column(db.Integer, primary_key=True)
+    AddressLine1 = db.Column(db.String(128))
+    City = db.Column(db.String(128))
+    PostalCode = db.Column(db.Integer)
+    # Include other fields as necessary
 
 class ShipMethod(db.Model):
     __tablename__ = 'ShipMethod'
@@ -67,22 +86,49 @@ def index():
 @app.route('/add', methods=['GET', 'POST'])
 def add_order():
     ship_methods = db.session.query(ShipMethod).all()
+    addresses = Address.query.all()
+    customers = db.session.query(Customer).all()
+
+    
+
     if request.method == 'POST':
         # Pobierz dane z formularza
-        customer_id = request.form.get('customer_id')
-        bill_to_address_id = request.form.get('bill_to_address_id', type=int)
-        ship_to_address_id = request.form.get('ship_to_address_id', type=int)
+        customer_id = request.form.get('customer_id', type=int)
+        address_id = request.form.get('address_id', type=int)
         ship_method_id = request.form.get('ship_method_id', type=int)
         order_date = request.form.get('order_date')
         due_date = request.form.get('due_date')
         ship_date = request.form.get('ship_date')
+        existing_address_id = request.form.get('existing_address_id')
+        # Jeżeli dodajemy nowy adres
+        new_address_line1 = request.form.get('new_address_line1')
+        new_city = request.form.get('new_city')
+        existing_customer_id = request.form.get('existing_customer_id', type=int)
+        new_customer_name = request.form.get('new_customer_name') 
         # Dodaj inne wymagane pola...
-
+        
+        if existing_customer_id:
+            customer_id = existing_customer_id
+        else:
+            # Tworzenie nowego klienta
+            new_customer = Customer(Name=new_customer_name)  # Uzupełnij inne wymagane pola
+            db.session.add(new_customer)
+            db.session.flush()  # Aby uzyskać ID nowego klienta
+            customer_id = new_customer.CustomerID
+        if new_address_line1:
+            # Dodajemy nowy adres do bazy danych
+            new_address = Address(AddressLine1=new_address_line1, City=new_city)
+            db.session.add(new_address)
+            db.session.flush()  # To polecenie jest potrzebne, aby uzyskać ID dla nowo dodanego adresu
+            address_id = new_address.AddressID
+        else:
+            # Używamy istniejącego adresu
+            address_id = existing_address_id
         # Tworzenie nowego obiektu SalesOrderHeader
         new_order = SalesOrderHeader(
             CustomerID=customer_id,
-            BillToAddressID=bill_to_address_id,
-            ShipToAddressID=ship_to_address_id,
+            BillToAddressID=address_id,
+            ShipToAddressID=address_id, # Or however you decide to get this
             OrderDate=datetime.strptime(order_date, '%Y-%m-%d') if order_date else None,
             DueDate=datetime.strptime(due_date, '%Y-%m-%d') if due_date else None,
             ShipDate=datetime.strptime(ship_date, '%Y-%m-%d') if ship_date else None,
@@ -102,7 +148,7 @@ def add_order():
             return render_template('error.html')  # Przykładowy
 
 
-    return render_template('add_order.html',ship_methods=ship_methods)
+    return render_template('add_order.html',ship_methods=ship_methods,  addresses=addresses, customers=customers)
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):

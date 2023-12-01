@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Zamówienie</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        function toggleNewCustomerFields() {
+            var isNewCustomer = document.getElementById('newCustomerCheck').checked;
+            var newCustomerFields = document.getElementById('newCustomerFields');
+            newCustomerFields.style.display = isNewCustomer ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Dodaj Zamówienie</h2>
+        <form action="/add" method="post">
+            <div class="form-group">
+                <label for="customerID">ID Klienta (jeśli istnieje)</label>
+                <input type="number" class="form-control" id="customerID" name="customer_id">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="newCustomerCheck" onchange="toggleNewCustomerFields()">
+                    <label class="form-check-label" for="newCustomerCheck">
+                        Dodaj nowego klienta
+                    </label>
+                </div>
+            </div>
+
+            <div id="newCustomerFields" style="display:none;">
+                <h3>Informacje o Nowym Kliencie</h3>
+                <div class="form-group">
+                    <label for="firstName">Imię</label>
+                    <input type="text" class="form-control" id="firstName" name="first_name">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Nazwisko</label>
+                    <input type="text" class="form-control" id="lastName" name="last_name">
+                </div>
+                <!-- Dodaj więcej pól dotyczących nowego klienta zgodnie z potrzebami -->
+            </div>
+
+            <!-- Pola dotyczące zamówienia -->
+            <div class="form-group">
+                <label for="orderDate">Data Zamówienia</label>
+                <input type="date" class="form-control" id="orderDate" name="order_date" required>
+            </div>
+            <div class="form-group">
+                <label for="dueDate">Data Realizacji</label>
+                <input type="date" class="form-control" id="dueDate" name="due_date" required>
+            </div>
+            <div class="form-group">
+                <label for="shipDate">Data Wysyłki</label>
+                <input type="date" class="form-control" id="shipDate" name="ship_date">
+            </div>
+            <div class="form-group">
+                <label for="shipMethodID">Metoda Wysyłki</label>
+                <select class="form-control" id="shipMethodID" name="ship_method_id" required>
+                    <option value="">Wybierz metodę...</option>
+                    <!-- Przykładowe opcje, powinny być ładowane dynamicznie -->
+                    <option value="1">XRQ - TRUCK GROUND</option>
+                    <option value="2">ZY - EXPRESS</option>
+                    <option value="3">OVERSEAS - DELUXE</option>
+                    <option value="4">OVERNIGHT J-FAST</option>
+                    <option value="5">CARGO TRANSPORT 5</option>
+                </select>
+            </div>
+            <!-- Dodaj tu inne wymagane pola... -->
+
+            <button type="submit" class="btn btn-primary">Dodaj Zamówienie</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('customerID').addEventListener('change', function() {
+            document.getElementById('newCustomerCheck').checked = !this.value;
+            toggleNewCustomerFields();
+        });
+    </script>
+</body>
+</html>

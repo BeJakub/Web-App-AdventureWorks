@@ -28,9 +28,11 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>ID Klienta</th>
                     <th>Data Zamówienia</th>
                     <th>Data Dostawy</th>
                     <th>Data Wysyłki</th>
+                    <th>Metoda wysyłki</th>
                     <!-- Dodaj inne nagłówki kolumn -->
                     <th>Akcje</th>
                 </tr>
@@ -39,9 +41,11 @@
                 {% for order in orders %}
                 <tr>
                     <td>{{ order.SalesOrderID }}</td>
+                    <td>{{ order.CustomerID }}</td>
                     <td>{{ order.OrderDate }}</td>
                     <td>{{ order.DueDate }}</td>
                     <td>{{ order.ShipDate }}</td>
+                    <td>{{ order.ShipMethodID }}</td>
                     <!-- Dodaj inne pola -->
                     <td>
                         <a href="/edit/{{ order.SalesOrderID }}" class="btn btn-secondary btn-sm">Edytuj</a>

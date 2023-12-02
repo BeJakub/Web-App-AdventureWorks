@@ -11,6 +11,19 @@
         <h2>Dodaj Zamówienie</h2>
         <form action="/add" method="post">
             <div class="form-group">
+                <label for="existingCustomerID">Istniejący Klient</label>
+                <select class="form-control" name="existing_customer_id" id="existingCustomerID">
+                    <option value="">Wybierz klienta...</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.CustomerID }}">{{customer.CustomerID}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="newCustomerCheckbox" name="new_customer_checkbox">
+                <label class="form-check-label" for="newCustomerCheckbox">Stwórz nowego klienta</label>
+            </div>
+            <div class="form-group">
                 <label for="existingAddressID">Wybierz istniejący adres:</label>
                 <select class="form-control" id="existingAddressID" name="existing_address_id">
                     <option value="">Wybierz adres...</option>
@@ -19,22 +32,33 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group">
-                <label for="newAddressLine1">Lub dodaj nowy adres:</label>
-                <input type="text" class="form-control" id="newAddressLine1" name="new_address_line1" placeholder="Linia adresu 1">
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="newAddressCheckbox" name="new_address_checkbox">
+                <label class="form-check-label" for="newAddressCheckbox">Dodaj nowy adres</label>
             </div>
-            <div class="form-group">
-                <label for="existingCustomerID">Istniejący Klient</label>
-                <select name="existing_customer_id" id="existingCustomerID">
-                    <option value="">Wybierz klienta...</option>
-                    {% for customer in customers %}
-                    <option value="{{ customer.CustomerID }}">{{customer.CustomerID}}</option>
-                    {% endfor %}
-                </select>
-
-                <!-- Pola dla dodania nowego klienta -->
-                <label for="newCustomerName">Imię Nowego Klienta</label>
-                <input type="text" id="newCustomerName" name="new_customer_name">
+            <!-- Pola dla nowego adresu, które będą ukryte/pokazane w zależności od znacznika -->
+            <div id="newAddressFields" style="display:none;">
+                <div class="form-group">
+                    <label for="newAddressLine1">Adres Linia 1:</label>
+                    <input type="text" class="form-control" id="newAddressLine1" name="new_address_line1">
+                </div>
+                <div class="form-group">
+                    <label for="newAddressLine2">Adres Linia 2 (opcjonalnie):</label>
+                    <input type="text" class="form-control" id="newAddressLine2" name="new_address_line2">
+                </div>
+                <div class="form-group">
+                    <label for="newCity">Miasto:</label>
+                    <input type="text" class="form-control" id="newCity" name="new_city" required>
+                </div>
+                <div class="form-group">
+                    <label for="newStateProvinceID">ID Stanu/Regionu:</label>
+                    <input type="text" class="form-control" id="newStateProvinceID" name="new_state_province_id" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPostalCode">Kod Pocztowy:</label>
+                    <input type="text" class="form-control" id="newPostalCode" name="new_postal_code" required>
+                </div>    
+                <!-- ... reszta pól dla adresu ... -->
             </div>
             <!-- Kontynuacja formularza dla zamówienia -->
             <div class="form-group">
@@ -64,5 +88,37 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+
+    <script>
+        // Skrypt JavaScript do pokazywania/ukrywania pól dla nowego klienta
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const newCustomerCheckbox = document.getElementById('newCustomerCheckbox');
+            const newCustomerFields = document.getElementById('newCustomerFields');
+
+            newCustomerCheckbox.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    newCustomerFields.style.display = 'block';
+                } else {
+                    newCustomerFields.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    <script>
+        // Skrypt JavaScript do pokazywania/ukrywania pól dla nowego adresu
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const newAddressCheckbox = document.getElementById('newAddressCheckbox');
+            const newAddressFields = document.getElementById('newAddressFields');
+    
+            newAddressCheckbox.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    newAddressFields.style.display = 'block';
+                } else {
+                    newAddressFields.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

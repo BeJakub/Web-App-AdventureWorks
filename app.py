@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -9,6 +9,7 @@ import uuid
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://@localhost/AdventureWorks2022?driver=ODBC+Driver+17+for+SQL+Server'
 db = SQLAlchemy(app)
+app.secret_key = 'byczek123'
 
 def format_date(value, format_string='%Y-%m-%d'):
     if value is None:
@@ -63,8 +64,10 @@ class Address(db.Model):
     __table_args__ = {'schema': 'Person'}
     AddressID = db.Column(db.Integer, primary_key=True)
     AddressLine1 = db.Column(db.String(128))
+    AddressLine2 = db.Column(db.String(128))
     City = db.Column(db.String(128))
     PostalCode = db.Column(db.Integer)
+    StateProvinceID = db.Column(db.Integer)
     # Include other fields as necessary
 
 class ShipMethod(db.Model):
@@ -102,33 +105,52 @@ def add_order():
         existing_address_id = request.form.get('existing_address_id')
         # Jeżeli dodajemy nowy adres
         new_address_line1 = request.form.get('new_address_line1')
+        new_address_line2 = request.form.get('new_address_line2')
         new_city = request.form.get('new_city')
         existing_customer_id = request.form.get('existing_customer_id', type=int)
-        new_customer_name = request.form.get('new_customer_name') 
+        new_state_province_id = request.form['new_state_province_id']
+        new_postal_code = request.form['new_postal_code']
         # Dodaj inne wymagane pola...
         
-        if existing_customer_id:
-            customer_id = existing_customer_id
-        else:
+        # Checkbox dla nowego klienta
+        create_new_customer = 'new_customer_checkbox' in request.form
+        if create_new_customer:
+            new_customer_name = request.form.get('new_customer_name') 
             # Tworzenie nowego klienta
-            new_customer = Customer(Name=new_customer_name)  # Uzupełnij inne wymagane pola
+            new_customer = Customer()  # Uzupełnij inne wymagane pola
             db.session.add(new_customer)
             db.session.flush()  # Aby uzyskać ID nowego klienta
             customer_id = new_customer.CustomerID
-        if new_address_line1:
+        else:
+            customer_id = request.form.get('existing_customer_id', type=int)
+
+        # Checkbox dla nowego adresu
+        create_new_address = 'new_address_checkbox' in request.form
+        if create_new_address:
+            new_address_line1 = request.form.get('new_address_line1')
+            new_address_line2 = request.form.get('new_address_line2')
+            new_city = request.form.get('new_city')
+            new_state_province_id = request.form.get('new_state_province_id')
+            new_postal_code = request.form.get('new_postal_code')
             # Dodajemy nowy adres do bazy danych
-            new_address = Address(AddressLine1=new_address_line1, City=new_city)
+            new_address = Address(
+                AddressLine1=new_address_line1,
+                AddressLine2=new_address_line2,
+                City=new_city,
+                StateProvinceID=new_state_province_id,
+                PostalCode=new_postal_code
+            )
             db.session.add(new_address)
             db.session.flush()  # To polecenie jest potrzebne, aby uzyskać ID dla nowo dodanego adresu
             address_id = new_address.AddressID
         else:
-            # Używamy istniejącego adresu
-            address_id = existing_address_id
+            address_id = request.form.get('existing_address_id', type=int)
+
         # Tworzenie nowego obiektu SalesOrderHeader
         new_order = SalesOrderHeader(
             CustomerID=customer_id,
             BillToAddressID=address_id,
-            ShipToAddressID=address_id, # Or however you decide to get this
+            ShipToAddressID=address_id,
             OrderDate=datetime.strptime(order_date, '%Y-%m-%d') if order_date else None,
             DueDate=datetime.strptime(due_date, '%Y-%m-%d') if due_date else None,
             ShipDate=datetime.strptime(ship_date, '%Y-%m-%d') if ship_date else None,
@@ -136,19 +158,18 @@ def add_order():
             # Przypisz wartości do innych pól...
         )
 
-        # Dodaj zamówienie do sesji i zapisz w bazie danych
         db.session.add(new_order)
         try:
             db.session.commit()
+            flash('Zamówienie zostało dodane pomyślnie.', 'success')
             return redirect(url_for('index'))
         except Exception as e:
             db.session.rollback()
-            # Tu możesz obsłużyć błąd, np. wyświetlić komunikat o błędzie
-            print(e)
-            return render_template('error.html')  # Przykładowy
+            flash(f'Wystąpił błąd podczas dodawania zamówienia: {e}', 'error')
+            return render_template('error.html', error=str(e))
 
-
-    return render_template('add_order.html',ship_methods=ship_methods,  addresses=addresses, customers=customers)
+    # GET request
+    return render_template('add_order.html', ship_methods=ship_methods,addresses=addresses, customers=customers)
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):
